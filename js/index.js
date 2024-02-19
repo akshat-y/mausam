@@ -16,9 +16,9 @@ const weather_mappings = {
         'option_pane_bg': 'rgb(131, 140, 136, 0.6)'
     },
     'snow': {
-        'background': 'https://images.unsplash.com/photo-1627854879776-c6eab3d4b7a6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2069&q=80',
-        'primary': '#ffffff',
-        'option_pane_bg': 'rgba(219, 219, 219, 0.6)'
+        'background': 'https://images.unsplash.com/photo-1642623883157-cd5b06ae6c45?q=80&w=2750&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+        'primary': '#58c6f5',
+        'option_pane_bg': 'rgba(191, 236, 255, 0.2)'
     },
     'clear': {
         'background': 'https://images.unsplash.com/photo-1507384428463-9ad93c924971?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80',
@@ -46,7 +46,8 @@ $(document).ready(function () {
         const location = $("#location-input").val()
         // const coordinates = await getLocationLatLong(location)        
         const city = await setWeatherDetails(location)        
-        setRecentCitiesList(city)
+        if(city != '')
+            setRecentCitiesList(city)
     })
 
     $(".grid-container .options-pane #city-list").on('click', 'li', async function () {
@@ -102,9 +103,18 @@ function setCurrentCityTime(timezone){
 
 async function setWeatherDetails(location) {
 
+    if(location == '' || location == undefined)
+        return
+
     $('#loader').removeClass('hidden')
 
     const weatherDetails = await getLocationWeather(location)
+
+    if(weatherDetails.cod == 404){
+        $('#loader').addClass('hidden')
+        return ''
+    }        
+
     setCurrentCityTime(weatherDetails.timezone)
     
     $("#degree-value").text(Math.round(weatherDetails.main.temp))
